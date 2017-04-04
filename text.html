@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    a {
+      padding: 2px 5px;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #ccc;
+    }
+
+    a.active {
+      color: #ff0;
+    }
+  </style>
+</head>
+<body>
+<script>
+    function pagination(pages, currentPage, distance, renderTo, callback) {
+        var obj = {
+            pages: pages,
+            currentPage: currentPage,
+            distance: distance,
+            init: function () {
+                renderTo.innerHTML = '';
+                if (obj.currentPage !== 1) {
+                    var first = document.createElement('a');
+                    var prev = document.createElement('a');
+                    first.innerHTML = '首页';
+                    prev.innerHTML = '上一页';
+                    first.href = 'javascript:;';
+                    prev.href = 'javascript:;';
+                    first.onclick = function () {
+                        obj.indexTo(1);
+                        callback(1);
+                    };
+                    prev.onclick = function () {
+                        callback(obj.currentPage - 1);
+                        obj.prev();
+
+                    };
+                    renderTo.appendChild(first);
+                    renderTo.appendChild(prev);
+                }
+                var min = obj.currentPage - distance;
+                var max = obj.currentPage + distance;
+                if(min<1){
+                    min=1;
+                    max=obj.distance*2+1;
+                }
+                if(max>obj.pages){
+                    min=obj.pages-obj.distance*2;
+                    max=obj.pages;
+                }
+                for (; min <= max; min++) {
+                    (function (i) {
+                        var a = document.createElement('a');
+                        a.innerHTML = i;
+                        a.href = 'javascript:;';
+                        a.onclick = function () {
+                            obj.indexTo(i);
+                            callback(i);
+                        };
+                        renderTo.appendChild(a);
+                        if (obj.currentPage === i) {
+                            a.className = 'active';
+                        }
+                    })(min)
+                }
+                if (obj.currentPage !== obj.pages) {
+                    var last = document.createElement('a');
+                    var next = document.createElement('a');
+                    last.innerHTML = '尾页';
+                    next.innerHTML = '下一页';
+                    last.href = 'javascript:;';
+                    next.href = 'javascript:;';
+                    last.onclick = function () {
+                        obj.indexTo(obj.pages);
+                        callback(obj.pages);
+                    };
+                    next.onclick = function () {
+                        callback(obj.currentPage+1);
+                        obj.next();
+
+                    };
+                    renderTo.appendChild(next);
+                    renderTo.appendChild(last);
+                }
+            },
+            prev: function () {
+                obj.indexTo(obj.currentPage - 1);
+            },
+            next: function () {
+                obj.indexTo(obj.currentPage + 1);
+            },
+            first: function () {
+                obj.indexTo(1);
+            },
+            last: function () {
+                obj.indexTo(obj.pages);
+            },
+            indexTo: function (current) {
+                obj.currentPage = current;
+                obj.init();
+            }
+        };
+        return obj;
+    }
+    var p = pagination(10, 5, 3, document.body, function (current) {
+        alert(current);
+    });
+    p.init();
+</script>
+</body>
+</html>
